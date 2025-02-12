@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-files:
-    runs-on: windows
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -32,7 +32,7 @@ jobs:
         git reset HEAD demo/reddy/
         git checkout -- demo/reddy/
         git config --global user.name 'sathyanarayana Pinreddy'
-        git config --global user.email 'c_sathyanarayana.pinreddy@viasat.com'
+        git config --global user.email 'sathya5838@gmail.com'
         git add demo/reddy/
         git commit -m "Discard changes in PR branch for specific files"
         # Force push to the PR branch to discard changes
