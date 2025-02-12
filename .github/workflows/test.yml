@@ -1,0 +1,39 @@
+name: Check and Restore Specific Files in PR
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check-files:
+    runs-on: windows
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Fetch main branch
+      run: |
+        git fetch origin main
+    - name: Check for specific files
+      id: check_files
+      run: |
+          $directory_to_check = "demo/reddy"
+          $conflict = $false
+          if (git diff --name-only origin/main HEAD | Select-String -Pattern $directory_to_check) {
+            $conflict = $true
+          }
+          echo "::set-output name=conflict::$conflict"
+    - name: Discard changes in PR branch for specific files
+      if: steps.check_files.outputs.conflict == 'true'
+      run: |
+        # Discard changes in PR branch for specific files
+        git checkout origin/main -- demo/reddy/
+        git reset HEAD demo/reddy/
+        git checkout -- demo/reddy/
+        git config --global user.name 'sathyanarayana Pinreddy'
+        git config --global user.email 'c_sathyanarayana.pinreddy@viasat.com'
+        git add demo/reddy/
+        git commit -m "Discard changes in PR branch for specific files"
+        # Force push to the PR branch to discard changes
+        git push origin HEAD:${{ github.head_ref }} --force
